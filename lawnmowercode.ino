@@ -1,4 +1,3 @@
-//Motor A
 int enAPin1 = D8;
 int motorPinA1 = D3;
 int motorPinA2 = D2;
@@ -8,10 +7,10 @@ int enBPin2 = D16;
 int motorPinB3 = D15;
 int motorPinB4 = D13;
 
-
 void setup() {
 
-    Particle.function("Control", btnMovement);
+    Particle.subscribe("botstatus",btnMovement,MY_DEVICES);
+    //Particle.function("Control", btnMovement);
     //setup Motor A and Motor B
     pinMode(enAPin1, OUTPUT);
     pinMode(enBPin2, OUTPUT);
@@ -23,14 +22,11 @@ void setup() {
     digitalWrite(enBPin2, 0);
 }
 
-void loop() {
+void loop() {}
 
-    
-}
-
-
-int btnMovement(String command) {
-    if (command == "start")
+void btnMovement(const char event, const char *data)
+{
+    if (strcmp (data,"startbot") == 0)
     {
         digitalWrite(enAPin1, 255);
         digitalWrite(enBPin2, 255);
@@ -38,9 +34,8 @@ int btnMovement(String command) {
         digitalWrite(motorPinA2, LOW); 
         digitalWrite(motorPinB3, HIGH); 
         digitalWrite(motorPinB4, LOW); 
-        return 1;
     }
-     else if (command == "stop")
+    if (strcmp (data,"stopbot") == 0)
     {
         digitalWrite(enAPin1, 0);
         digitalWrite(enBPin2, 0);
@@ -48,7 +43,5 @@ int btnMovement(String command) {
         digitalWrite(motorPinA2, LOW); 
         digitalWrite(motorPinB3, LOW); 
         digitalWrite(motorPinB4, LOW); 
-        return 1;
     }
-    return 0;
 }
