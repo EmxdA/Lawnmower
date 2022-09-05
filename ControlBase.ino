@@ -1,3 +1,29 @@
+   // This #include statement was automatically added by the Particle IDE.
+#include <HC_SR04.h>
+
+//Motor A
+int enAPin1 = D8;
+int motorPinA1 = D3;
+int motorPinA2 = D2;
+
+//Motor B
+int enBPin2 = D16;
+int motorPinB3 = D15;
+int motorPinB4 = D13;
+
+bool stop = false;
+double cm = 0.0;
+int buttonPin = D5;
+int buttonState = 1;
+int lastState = LOW;
+//bool beam_status = false;
+
+#define trigPin      D10
+#define echoPin      D11
+
+HC_SR04 rangefinder = HC_SR04(trigPin, echoPin);
+
+void setup() {
     pinMode(trigPin, OUTPUT);
     pinMode(echoPin, INPUT);
     Particle.variable("dist", cm);
