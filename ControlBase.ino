@@ -1,6 +1,3 @@
-// This #include statement was automatically added by the Particle IDE.
-#include <LiquidCrystal_I2C_Spark.h>
-
 // Create lcd variable of the type of library to use its functions
 LiquidCrystal_I2C *lcd;
 
