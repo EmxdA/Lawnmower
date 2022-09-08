@@ -1,118 +1,98 @@
-// This #include statement was automatically added by the Particle IDE.
-#include <HC_SR04.h>
+// Create lcd variable of the type of library to use its functions
+LiquidCrystal_I2C *lcd;
 
-//Motor A
-int enAPin1 = D8;
-int motorPinA1 = D3;
-int motorPinA2 = D2;
-
-//Motor B
-int enBPin2 = D16;
-int motorPinB3 = D15;
-int motorPinB4 = D13;
-
-bool stop = false;
-double cm = 0.0;
-int buttonPin = D5;
-int buttonState = 1;
-int lastState = LOW;
-//bool beam_status = false;
-
-#define trigPin      D10
-#define echoPin      D11
-
-HC_SR04 rangefinder = HC_SR04(trigPin, echoPin);
+//Declaring pins and variables
+int onLED = D5;
+int offLED = D6;
+int stopBtn = D3;
+int startBtn = D4;
+int startButtonState = 0;
+int stopButtonState = 0;
+int status = 0;
 
 void setup() {
-    pinMode(trigPin, OUTPUT);
-    pinMode(echoPin, INPUT);
-    Particle.variable("dist", cm);
-    //setup Motor A and Motor B
-    pinMode(buttonPin, INPUT_PULLUP);
-    pinMode(enAPin1, OUTPUT);
-	pinMode(enBPin2, OUTPUT);
-	pinMode(motorPinA1, OUTPUT);
-	pinMode(motorPinA2, OUTPUT);
-	pinMode(motorPinB3, OUTPUT);
-	pinMode(motorPinB4, OUTPUT);
-	digitalWrite(enAPin1, 0);
-    digitalWrite(enBPin2, 0);
+    //Subscribing to event that is being pushed to the cloud
+    Particle.subscribe("botstatus",webStatus,MY_DEVICES);
     
-	Particle.subscribe("startmovement", StartAlarm);
+    //Setup buttons and LEDs
+    pinMode(stopBtn, INPUT_PULLUP);
+    pinMode(startBtn, INPUT_PULLUP);
+    pinMode(onLED, OUTPUT);
+    pinMode(offLED, OUTPUT);
+    
+    // Initialise 16x2 lcd with its i2c address and turn on backlight then clear screen
+    lcd = new LiquidCrystal_I2C(0x27, 16, 2);
+    lcd->init();
+    lcd->backlight();
+    lcd->clear();
+}
+
+//This is the event handler for "botstatus" event and the data it receives
+void webStatus(const char *event, const char *data) {
+    //If "startbot" is received as input then change status to 1
+    if (strcmp (data,"startbot") == 0)
+    {
+        status = 1;
+    }
+    //If "startbot" is received as input then change status to 0
+    if (strcmp (data,"stopbot") == 0)
+    {
+        status = 0;
+    }
 }
 
 void loop() {
-    buttonState = digitalRead(buttonPin);
-    Stopping();
-}
-
-
-void StartAlarm(const char *event, const char *data)
-{
-    if (strcmp(data, "alarmBot") == 0)
-    {
-        while (stop == false)
-        {
-            cm = rangefinder.getDistanceCM();
-            buttonState = digitalRead(buttonPin);
-            if(buttonState == LOW)
-            {
-                Particle.publish("startmovement", "endAlarm");
-                stop = true;
-            }
-            if (cm > 25)
-            {
-                Accelerate();
-            }
-            if (cm <= 25)
-            {
-                ChangeDirection();
-            }
-        }
-    }
-    
-}
-void Stopping(){
-    digitalWrite(enAPin1, 0);
-    digitalWrite(enBPin2, 0);
-    digitalWrite(motorPinA1, LOW); 
-    digitalWrite(motorPinA2, LOW); 
-    digitalWrite(motorPinB3, LOW); 
-    digitalWrite(motorPinB4, LOW); 
+    //Clear lcd and call functions to show time and status of bot
+    lcd->clear();
+    timer();
+    printStatus();
     delay(1000);
-}
-
-void Accelerate() {
-    digitalWrite(enAPin1, 75);
-    digitalWrite(enBPin2, 75);
-    digitalWrite(motorPinA1, LOW); 
-    digitalWrite(motorPinA2, HIGH); 
-    digitalWrite(motorPinB3, HIGH); 
-    digitalWrite(motorPinB4, LOW); 
-    delay(100);
-}
-
-void ChangeDirection() {
-    int direction = rand()% 3+0;
     
-    if (direction == 1)
-   {
-        digitalWrite(enAPin1, 75);
-        digitalWrite(enBPin2, 75);
-        digitalWrite(motorPinA1, HIGH); 
-        digitalWrite(motorPinA2, LOW); 
-        digitalWrite(motorPinB3, HIGH); 
-        digitalWrite(motorPinB4, LOW); 
-        delay(100);
+    //Read the pin values of the buttons
+    startButtonState = digitalRead(startBtn);
+    stopButtonState = digitalRead(stopBtn);
+    
+    //If start button is pressed publish "botstatus" event and the data "startbot" to the cloud
+    if (startButtonState == HIGH){
+        status = 1;
+        Particle.publish("botstatus","startbot");
     }
-    else
+    //If stop button is pressed publish "botstatus" event and the data "stopbot" to the cloud
+    else if (stopButtonState == HIGH){
+        status = 0;
+        Particle.publish("botstatus","stopbot");
+    }
+}
+
+//This function prints the time on lcd screen
+void timer(){
+    //clear lcd and set writing position to top of screen
+    lcd->setCursor(1,0);
+    //print the time with the hour, minute and seconds
+    lcd->print(Time.hour() < 10? "   0" : "    ");
+    lcd->print(Time.hour());
+    lcd->print(Time.minute() < 10? ":0": ":");
+    lcd->print(Time.minute());
+    lcd->print(Time.second()< 10? ":0": ":");
+    lcd->print(Time.second());
+
+}
+
+//This function pritns the bot status on lcd screen
+void printStatus(){
+    //If the status is 1 then add the active text to lcd and turn green LED on
+    if (status == 1)
     {
-        digitalWrite(enAPin1, 75);
-        digitalWrite(enBPin2, 75);
-        digitalWrite(motorPinA1, LOW); 
-        digitalWrite(motorPinA2, HIGH); 
-        digitalWrite(motorPinB3, LOW); 
-        digitalWrite(motorPinB4, HIGH); 
-        delay(100);
+        lcd->setCursor(2,1);
+        lcd->print("Bot---Active");
+        digitalWrite(onLED, HIGH);
+        digitalWrite(offLED, LOW);
+    }
+    //If the status is 0 then add the inactive text to lcd and turn red LED on
+    else if (status == 0){
+        lcd->setCursor(2,1);
+        lcd->print("Bot-Inactive");
+        digitalWrite(offLED, HIGH);
+        digitalWrite(onLED, LOW);
     }
 }
