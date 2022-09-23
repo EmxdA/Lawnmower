@@ -1,0 +1,85 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+h1{
+    margin-top: 20px;
+    text-align: center;
+}
+.container{
+    margin-top: 7%;
+    display: grid;
+    justify-content: center;
+}
+
+.controlbtn{
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    grid-template-rows: repeat(3, auto);
+}
+
+.controlbtn button{
+    width: 150px;
+    height: 90px;
+    background-color: rgb(0, 234, 255);
+    border-color: grey;
+}
+
+.controlbtn button:hover{
+    background-color: aqua;
+    cursor: pointer;
+}
+
+#forward{
+    grid-column-start: 2;
+    grid-column-end: 4;
+    border-bottom: none;
+}
+
+#left{
+    grid-column-start: 1;
+    grid-column-end: 3;
+    border-right: none;
+}
+
+#backward{
+    grid-column-start: 2;
+    grid-column-end: 4;
+    border-top: none;
+}
+
+.startstop{
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.startstop button{
+    margin: 10px;
+    width: 120px;
+    height: 60px;
+}
+
+#start{
+    background-color: rgb(32, 191, 32);
+}
+
+#start:hover{
+    background-color: greenyellow;
+    cursor: pointer;
+}
+
+#stop{
+    background-color: red;
+}
+
+#stop:hover{
+    background-color: orange;
+    cursor: pointer;
+}
+
+#status{
+    margin-top: 10px;
+    text-align: center;
+}
