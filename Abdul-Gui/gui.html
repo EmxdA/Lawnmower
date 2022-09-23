@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/particle-api-js@8/dist/particle.min.js"> </script>
+        <script src="app.js"></script>
+        </script>
+        <title>GUI</title>
+        <link rel="stylesheet" href="gui.css">
+    </head>
+    <body>
+        <h1>Lawnmower Controller</h1>
+        <div class="container">
+            <div class="controlbtn">
+                <button id="forward" onclick="Forward()">Forward</button>
+                <button id="left" onclick="Left()">Left</button>
+                <button id="right" onclick="Right()">Right</button>
+                <button id="backward" onclick="Backward()">Backwards</button>
+            </div>
+            <div class="startstop">
+                <button id="start" onclick="Start()">Start</button>
+                <button id="stop" onclick="Stop()">Stop</button>
+            </div>
+        </div>
+        <p id="status">Rover Status:</p>
+    </body>
+</html>
