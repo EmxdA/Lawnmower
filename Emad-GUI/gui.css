@@ -1,0 +1,82 @@
+*{
+    margin: 0 0;
+    padding: 0 0;
+}
+
+#status {
+    margin-top: 10%;
+    text-align: center;
+}
+
+#buttons {
+    display: grid;
+    gap: 50px;
+    grid-template-columns: repeat(3, auto);
+    grid-template-rows: repeat(3, auto);
+    justify-content: center;
+    margin-top: 2%;
+}
+
+#buttons button{
+    width: 200px;
+    height: 100px;
+    border: none;
+}
+
+#buttons button:hover{
+    background-color: lightsalmon;
+}
+
+#forward{
+  grid-column-start: 2;
+  grid-column-end: 4;
+  background-color: orange;
+  border-radius: 15px;
+}
+
+
+#backwards{
+    grid-column-start: 2;
+    grid-column-end: 4;
+    background-color: orange;
+    border-radius: 15px;
+}
+
+#left {
+    background-color: orange;
+    border-radius: 15px;
+}
+
+#right{
+    background-color: orange;
+    border-radius: 15px;
+}
+
+#center-div {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+}
+
+#center-div button{
+    width: 100px;
+}
+
+#center-div button:hover{
+    background-color: lightblue;
+}
+
+#start {
+    background-color: lightgreen;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+
+#stop {
+    background-color: red;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
