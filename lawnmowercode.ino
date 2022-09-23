@@ -1,3 +1,6 @@
+// This #include statement was automatically added by the Particle IDE.
+#include <HC_SR04.h>
+
 //Motor A
 int enAPin1 = D8;
 int motorPinA1 = D3;
@@ -51,7 +54,7 @@ void btnMovement(const char *event, const char *data)
 }
 
 void loop() {
-    
+
 }
 
 //Below are the directional movement functions for the rover
@@ -59,25 +62,26 @@ int guiMovement(String data)
 {
     if (strcmp (data,"Forward") == 0)
     {
-        //This allows the rover to move forward
-        digitalWrite(enAPin1, 255);
-        digitalWrite(enBPin2, 255);
-        digitalWrite(motorPinA1, HIGH); 
-        digitalWrite(motorPinA2, LOW); 
-        digitalWrite(motorPinB3, HIGH); 
-        digitalWrite(motorPinB4, LOW);
-        return 1;
-    }
-    else if (strcmp (data,"Backward") == 0)
-    {
-        //This allows the rover to move backward
+         //This allows the rover to move forward
         digitalWrite(enAPin1, 255);
         digitalWrite(enBPin2, 255);
         digitalWrite(motorPinA1, LOW); 
         digitalWrite(motorPinA2, HIGH); 
         digitalWrite(motorPinB3, LOW); 
         digitalWrite(motorPinB4, HIGH);
-        return 1;   
+        delay(1250);
+    }
+    else if (strcmp (data,"Backward") == 0)
+    {
+        
+        //This allows the rover to move backward
+        digitalWrite(enAPin1, 255);
+        digitalWrite(enBPin2, 255);
+        digitalWrite(motorPinA1, HIGH); 
+        digitalWrite(motorPinA2, LOW); 
+        digitalWrite(motorPinB3, HIGH); 
+        digitalWrite(motorPinB4, LOW);
+        delay(1250);
     }
     else if (strcmp (data,"Left") == 0)
     {
@@ -88,7 +92,7 @@ int guiMovement(String data)
         digitalWrite(motorPinA2, HIGH); 
         digitalWrite(motorPinB3, HIGH); 
         digitalWrite(motorPinB4, LOW);
-        return 1;
+        delay(500);
     }
     else if (strcmp (data,"Right") == 0)
     {   
@@ -99,7 +103,7 @@ int guiMovement(String data)
         digitalWrite(motorPinA2, LOW); 
         digitalWrite(motorPinB3, LOW); 
         digitalWrite(motorPinB4, HIGH);
-        return 1;
+        delay(500);
     }
     else if (strcmp (data,"Stop") == 0)
     {
@@ -110,7 +114,6 @@ int guiMovement(String data)
         digitalWrite(motorPinA2, LOW); 
         digitalWrite(motorPinB3, LOW); 
         digitalWrite(motorPinB4, LOW);
-        return 1;
     }
     else if (strcmp (data,"Start") == 0)
     {
@@ -121,6 +124,11 @@ int guiMovement(String data)
         digitalWrite(motorPinA2, LOW); 
         digitalWrite(motorPinB3, HIGH); 
         digitalWrite(motorPinB4, LOW);
-        return 1;
     }
+    digitalWrite(motorPinA1, LOW); 
+    digitalWrite(motorPinA2, LOW); 
+    digitalWrite(motorPinB3, LOW); 
+    digitalWrite(motorPinB4, LOW);
+        
+    return 1;
 }
