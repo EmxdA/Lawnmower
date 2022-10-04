@@ -5,7 +5,7 @@
 #define IRSensorLeft    D1
 #define IRSensorRight   D9
 
-//Ultrasonic sensors
+//Ultrasonic pins
 #define  trigPin      D10
 #define  echoPin      D11
 
@@ -18,13 +18,18 @@ int motorPinA2 = D2;
 int enBPin2 = D16;
 int motorPinB3 = D15;
 int motorPinB4 = D13;
+
+//Distance variables
 int cm , leftDist, rightDist;
 
+//Blade motor
 int enBPinBlade = D12;
 int bladeMotor = D5;
 
+//Initiating status variable for bot
 int status = 0;
 
+//Initialising ultrasonic pins
 HC_SR04 rangefinder = HC_SR04(trigPin, echoPin);
 
 void setup() 
@@ -34,20 +39,20 @@ void setup()
     //Sending gui function to cloud
     Particle.function("guimovement", guiMovement);
 
-    //Setup Motor A and Motor B declaring their pin mode
+    //Setup Motor A, Motor B, Blade motor and declaring their pin mode
     pinMode(IRSensorLeft, INPUT);
     pinMode(IRSensorRight, INPUT);
     pinMode(trigPin, OUTPUT);
     pinMode(echoPin, INPUT);
     pinMode(enAPin1, OUTPUT);
-	pinMode(enBPin2, OUTPUT);
-	pinMode(enBPinBlade, OUTPUT);
-	pinMode(bladeMotor, OUTPUT);
-	pinMode(motorPinA1, OUTPUT);
-	pinMode(motorPinA2, OUTPUT);
-	pinMode(motorPinB3, OUTPUT);
-	pinMode(motorPinB4, OUTPUT);
-	digitalWrite(enAPin1, 0);
+    pinMode(enBPin2, OUTPUT);
+    pinMode(enBPinBlade, OUTPUT);
+    pinMode(bladeMotor, OUTPUT);
+    pinMode(motorPinA1, OUTPUT);
+    pinMode(motorPinA2, OUTPUT);
+    pinMode(motorPinB3, OUTPUT);
+    pinMode(motorPinB4, OUTPUT);
+    digitalWrite(enAPin1, 0);
     digitalWrite(enBPin2, 0);
     digitalWrite(enBPinBlade, 0);
 }
@@ -55,12 +60,12 @@ void setup()
 //This is the event handler for "botstatus" event and the data it receives
 void btnMovement(const char *event, const char *data)
 {
-    //If "startbot" is received as input then turn both motors on so robot can move
+    //If "startbot" is received as input then turn both motors and blade on so robot can move
     if (strcmp (data,"startbot") == 0)
     {
         status = 1;
     }
-    //If "stopbot" is received as input then turn both motors off so robot can stop
+    //If "stopbot" is received as input then turn both motors and blade off so robot can stop
     if (strcmp (data,"stopbot") == 0)
     {
         digitalWrite(enAPin1, 0);
@@ -75,6 +80,7 @@ void btnMovement(const char *event, const char *data)
 }
 
 void loop() {
+    //If the status is 1 then call the mowing function
     if (status == 1){
         automatedMowing();
     }
@@ -121,15 +127,17 @@ int guiMovement(String data)
         // This stops the rover
         digitalWrite(enAPin1, 0);
         digitalWrite(enBPin2, 0);
+        digitalWrite(enBPinBlade, 0);
         digitalWrite(motorPinA1, LOW); 
         digitalWrite(motorPinA2, LOW); 
         digitalWrite(motorPinB3, LOW); 
-        digitalWrite(motorPinB4, LOW);
+        digitalWrite(motorPinB4, LOW); 
+        status = 0;
     }
     else if (strcmp (data,"Start") == 0)
     {
         //This starts the rover
-        automatedMowing();
+	status = 1;
     }
     digitalWrite(motorPinA1, LOW); 
     digitalWrite(motorPinA2, LOW); 
@@ -139,15 +147,18 @@ int guiMovement(String data)
     return 1;
 }
 
-
+//This function moves the rover automatically and has object avoidance and boundary detection
 void automatedMowing(){
+    //Initialising varaiables
     cm = rangefinder.getDistanceCM();
     int statusSensorLeft = digitalRead(IRSensorLeft);
     int statusSensorRight = digitalRead(IRSensorRight);
     
+    //Initiating blade
     digitalWrite(enBPinBlade, 185);
     digitalWrite(bladeMotor, HIGH);
     
+    //Moving rover
     digitalWrite(enAPin1, 185);
     digitalWrite(enBPin2, 185);
     digitalWrite(motorPinA1, LOW); 
@@ -155,7 +166,7 @@ void automatedMowing(){
     digitalWrite(motorPinB3, LOW); 
     digitalWrite(motorPinB4, HIGH);
     
-    
+    //Changing direction based on IR sensor detection
     if (statusSensorLeft == LOW){
         turnRight();
     }
@@ -164,6 +175,7 @@ void automatedMowing(){
         turnLeft();
     }
     
+    //If nothing is withing 20cm of the rover keep it moving
     if (cm > 20){
         digitalWrite(enAPin1, 185);
         digitalWrite(enBPin2, 185);
@@ -172,6 +184,7 @@ void automatedMowing(){
         digitalWrite(motorPinB3, LOW); 
         digitalWrite(motorPinB4, HIGH);
     }
+    //If something is within 20cm then change the direction of the rover
     else if (cm < 20){ 
        
         changeDirection();
@@ -180,10 +193,13 @@ void automatedMowing(){
     
 }
 
+//This function checks the left and right of the rover and moves in the direction where there is nothing
 void changeDirection(){
     
+    //Publishing an event
     Particle.publish("motion detected");
      
+    //Turns left and right and records the distance
     digitalWrite(enAPin1, 100);
     digitalWrite(enBPin2, 100);
     digitalWrite(motorPinA1, HIGH); 
@@ -210,6 +226,7 @@ void changeDirection(){
     digitalWrite(motorPinB4, HIGH);
     delay(300);
     
+    //Compares the left and right distance and moves in the direction with the greater value
     if (rightDist > leftDist)
     {
         turnRight();
@@ -219,7 +236,7 @@ void changeDirection(){
     }
 }
 
-
+//This function turns the rover right
 void turnRight(){
     digitalWrite(enAPin1, 255);
     digitalWrite(enBPin2, 255);
@@ -230,6 +247,7 @@ void turnRight(){
     delay(1000);
 }
 
+//This function turns the rover left
 void turnLeft(){
     delay(1000);
     digitalWrite(enAPin1, 255);
